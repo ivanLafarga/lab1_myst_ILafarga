@@ -10,39 +10,44 @@
 """
 
 import pandas as pd
+import numpy as np
 import data as dt
+import functions as fn 
+import visualizations as vis
 
-# -- TEST 1 : 
-# verify that the script is being read
-print(dt.dict_test)
+datos = dt.primer_naftrac
+precios = dt.prices
 
-# -- TEST 2 :
-# verify that installed pandas module works correctly
-df_dict_test = pd.DataFrame(dt.dict_test, index=[0, 1])
-print(df_dict_test)
+fechas = ['2020-01-31', '2020-02-28', '2020-03-31', '2020-04-30','2020-05-29','2020-06-30','2020-07-31',
+'2020-08-31','2020-09-30','2020-10-30', '2020-11-30','2020-12-31','2021-01-29','2021-02-26','2021-03-31',
+'2021-04-30','2021-05-31','2021-06-30','2021-07-30','2021-08-31','2021-09-30','2021-10-26','2021-11-30',
+'2021-12-31','2022-01-26','2022-02-28','2022-03-31','2022-04-29','2022-05-31','2022-06-30','2022-07-29']
 
-# -- TEST 3 :
-# verify you can use plotly and visualize plots in jupyter notebook
+capital = 1000000
 
-import chart_studio.plotly as py   # various tools (jupyter offline print)
-import plotly.graph_objects as go  # plotting engine
+datos['Valor monetario'] = datos['Peso (%)']*capital 
+datos['Comision'] = datos['Valor monetario']*0.00125
 
-# example data
-df = pd.DataFrame({'column_a': [1, 2, 3, 4, 5], 'column_b': [1, 2, 3, 4, 5]})
-# basic plotly plot
-data = [go.Bar(x=df['column_a'], y=df['column_b'])]
-# instruction to view it inside jupyter
-py.iplot(data, filename='jupyter-basic_bar')
-# (alternatively) instruction to view it in web app of plotly
-py.plot(data)
+precios_cierre = precios.loc[fechas[0]]
+lista_precios_cierre = []
 
-# -- TEST 4 :
-# verify you can use plotly and visualize plots in web browser locally
+for i in datos.index:
+    lista_precios_cierre.append(precios_cierre[i])
 
-import plotly.io as pio            # to define input-output of plots
-pio.renderers.default = "browser"  # to render the plot locally in your default web browser
+datos['Precio cierre'] = lista_precios_cierre
+datos['Títulos'] = np.floor(datos['Valor monetario']/datos['Precio cierre'])
 
-# basic plotly plot
-plot_data = go.Figure(go.Bar(x=df['column_a'], y=df['column_b']))
-# instruction to view it in specified render (in this case browser)
-plot_data.show()
+inversion_pasiva = pd.DataFrame()
+
+for i in fechas:
+    inversion_pasiva[i] = precios.loc[i]*datos['Títulos']
+
+df_final = pd.DataFrame()
+
+df_final['Capital'] = inversion_pasiva.sum() + dt.cash_total*capital
+
+df_final['Rendimiento'] = df_final['Capital'].pct_change()
+
+df_final['Rendimiento acum'] = df_final['Rendimiento'].cumsum()
+
+
