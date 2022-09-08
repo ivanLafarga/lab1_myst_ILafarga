@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title></title>
+	<meta name="generator" content="LibreOffice 7.3.2.2 (Linux)"/>
+	<meta name="author" content="LAFARGA LIZARRAGA, JESUS IVAN"/>
+	<meta name="created" content="2022-09-08T20:40:00"/>
+	<meta name="changedby" content="LAFARGA LIZARRAGA, JESUS IVAN"/>
+	<meta name="changed" content="2022-09-08T20:40:00"/>
+	<meta name="AppVersion" content="16.0000"/>
+	<style type="text/css">
+		@page { size: 8.5in 11in; margin-left: 1.18in; margin-right: 1.18in; margin-top: 0.98in; margin-bottom: 0.98in }
+		p { line-height: 115%; text-align: left; orphans: 2; widows: 2; margin-bottom: 0.1in; direction: ltr; background: transparent }
+		p.western { font-family: "Times New Roman", serif }
+		p.cjk { font-family: "Times New Roman"; so-language: es-MX }
+		p.ctl { font-family: "Times New Roman" }
+	</style>
+</head>
+<body lang="es-MX" link="#000080" vlink="#800000" dir="ltr"><p class="western" style="line-height: 100%; margin-bottom: 0in">
+<br/>
+
+</p>
+<p class="western" style="line-height: 100%; margin-bottom: 0in"><br/>
+
+</p>
+<p class="western" style="line-height: 100%; margin-bottom: 0in"><br/>
+
+</p>
+<p class="western" style="line-height: 100%; margin-bottom: 0in">Notebook</p>
+<p class="western" style="line-height: 100%; margin-bottom: 0in">El
+motivo de este laboratirio es construir una serie de tiempo, de
+periodicidad mensual, donde para cada fecha en la que se tiene el
+rebalanceo (<b>archivos</b>) tendrá un valor calculado del ETF, se
+considera un capital inicial de 1 Millón de pesos.</p>
+<p class="western" style="line-height: 100%; margin-bottom: 0in">.</p>
+<p class="western" style="line-height: 100%; margin-bottom: 0in"><br/>
+
+</p>
+<ul>
+	<li><p class="western" style="line-height: 100%; margin-bottom: 0in">
+	Las bases de datos utilizadas en este laboratorio fueron una
+	referencia de un ETF, el NAFTRAC, que representa al S&amp;P/BMV IPC.
+	El NAFTRAC, el cual es un certificado de Participación Ordinaria no
+	amortizable, emitido por Nacional Financiera. Es un instrumento
+	financiero que confiere a sus tenedores el derecho a una parte
+	alícuota de un portafolio de acciones fideicomitidas. Es el primer
+	instrumento en su tipo en Latinoamérica.Está indexado al Índice
+	de Precios y Cotizaciones de la Bolsa Mexicana de Valores en un 100%
+	y facilita a pequeños inversionistas el acceso a inversiones
+	patrimoniales.</p>
+</ul>
+<p style="line-height: 100%; margin-left: 0.5in; margin-top: 0.19in; margin-bottom: 0.19in">
+Referente a este certificado se utilizarón las bases de datos
+mensuales de las acciones que lo conforman un periodo de 2 años en
+las fechas que van de 31 enero al 2020 a 29 de julio del año 2022,
+consideran las comisiones a pagar por cada rebalanceo = 0.00125 del
+valor de la operación (títulos*precio*comisión) ya que solo se
+permiten operaciones de compra (posición en largo).</p>
+<ul>
+	<li><p style="line-height: 100%; margin-top: 0.19in; margin-bottom: 0in">
+	Las operaciones se ejecutan al precio de mercado y se considera un
+	solo precio de compra o de venta para todos los títulos en la
+	operación.</p>
+	<li><p style="line-height: 100%; margin-bottom: 0.19in">Calcula el
+	valor de ese portafolio para todas las fechas utilizando los
+	archivos históricos.</p>
+</ul>
+<p style="line-height: 100%; margin-top: 0.19in; margin-bottom: 0.19in">
+Como es Inversión Pasiva, la cual es en un enfoque de inversión a
+largo plazo con el objetivo de crear riqueza gradualmente a lo largo
+del tiempo. Al minimizar la compra y jde costos. Se forma un
+portafolio con las ponderaciones del primer mes y se calculaa sus
+comisiones.</p>
+<p style="line-height: 100%; margin-top: 0.19in; margin-bottom: 0.19in">
+Las librerias utilizadas para el desarrollo de este laboratiorio
+fueron pandas especializada en el manejo así como en análisis de
+estructuras de datos y numpy especializada en el cálculo numérico,
+el análisis de datos y especialmente para un gran volumen de datos.</p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#c586c0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">import</span></font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">
+</span></font></font></font><font color="#4ec9b0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">pandas</span></font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">
+</span></font></font></font><font color="#c586c0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">as</span></font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">
+</span></font></font></font><font color="#4ec9b0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">pd</span></font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#c586c0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">import</span></font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">
+</span></font></font></font><font color="#4ec9b0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">numpy</span></font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">
+</span></font></font></font><font color="#c586c0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">as</span></font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">
+</span></font></font></font><font color="#4ec9b0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">np</span></font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#c586c0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">import</span></font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">
+</span></font></font></font><font color="#4ec9b0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">data</span></font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">
+</span></font></font></font><font color="#c586c0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">as</span></font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">
+</span></font></font></font><font color="#4ec9b0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">dt</span></font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#c586c0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">import</span></font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">
+</span></font></font></font><font color="#4ec9b0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">functions</span></font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">
+</span></font></font></font><font color="#c586c0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">as</span></font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">
+</span></font></font></font><font color="#4ec9b0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">fn</span></font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">
+</span></font></font></font>
+</p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#c586c0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">import</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">
+</font></font></font><font color="#4ec9b0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">visualizations</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">
+</font></font></font><font color="#c586c0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">as</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">
+</font></font></font><font color="#4ec9b0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">vis</font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<br/>
+
+</p>
+<p align="justify" style="line-height: 100%; margin-top: 0.19in; margin-bottom: 0.19in">
+<br/>
+<br/>
+
+</p>
+<p align="justify" style="line-height: 100%; margin-top: 0.19in; margin-bottom: 0.19in">
+Estas variables contienen los datos historicos de NAFTRAC así como
+los precios de cada acción a lo largo del tiempo</p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<br/>
+
+</p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">datos</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">
+= </font></font></font><font color="#4ec9b0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">dt</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">.</font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">primer_naftrac</font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">precios</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">
+= </font></font></font><font color="#4ec9b0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">dt</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">.</font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">prices</font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<br/>
+
+</p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<br/>
+
+</p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<br/>
+
+</p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<br/>
+
+</p>
+<p align="justify" style="line-height: 100%; margin-top: 0.19in; margin-bottom: 0.19in">
+La variable fechas contiene variables contienen los datos historicos
+de NAFTRAC así como los precios de cada acción a lo largo del
+tiempo dentro de las fechas mencionadas en un principio. Se agregó
+una variable llamada capital la cual adopta el valor del capital neto
+acorado a utilizar en este trabajo, se incluyen nuevas columnas más
+al data frame las cuales incluyen Valor monetario , comisión ,
+precio cierre, titulos, capital, rendimiento y rendimiento acumulado.</p>
+<p align="justify" style="line-height: 100%; margin-top: 0.19in; margin-bottom: 0.19in">
+Las cuales cumplen la función de ayudarnos a llegar al calculo
+adecuado para realizar la inversión pasiva así como conocer los
+resultados de la misma 
+</p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<br/>
+
+</p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<br/>
+
+</p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">fechas</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">
+= [</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2020-01-31'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,
+</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2020-02-28'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,
+</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2020-03-31'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,
+</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2020-04-30'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2020-05-29'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2020-06-30'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2020-07-31'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2020-08-31'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2020-09-30'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2020-10-30'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,
+</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2020-11-30'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2020-12-31'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2021-01-29'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2021-02-26'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2021-03-31'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2021-04-30'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2021-05-31'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2021-06-30'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2021-07-30'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2021-08-31'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2021-09-30'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2021-10-26'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2021-11-30'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2021-12-31'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2022-01-26'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2022-02-28'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2022-03-31'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2022-04-29'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2022-05-31'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2022-06-30'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">,</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'2022-07-29'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">]</font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<br/>
+
+</p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">capital</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">
+= </font></font></font><font color="#b5cea8"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">1000000</font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<br/>
+
+</p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">datos</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">[</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'Valor
+monetario'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">]
+= </font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">datos</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">[</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'Peso
+(%)'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">]*</font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">capital</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">
+</font></font></font>
+</p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">datos</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">[</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'Comision'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">]
+= </font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">datos</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">[</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'Valor
+monetario'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">]*</font></font></font><font color="#b5cea8"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">0.00125</font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<br/>
+
+</p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">precios_cierre</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">
+= </font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">precios</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">.</font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">loc</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">[</font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">fechas</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">[</font></font></font><font color="#b5cea8"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">0</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">]]</font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">lista_precios_cierre</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">
+= []</font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<br/>
+
+</p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#c586c0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">for</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">
+</font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">i</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">
+</font></font></font><font color="#c586c0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">in</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">
+</font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">datos</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">.</font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">index</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">:</font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#d4d4d4">   
+</font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">lista_precios_cierre</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">.</font></font></font><font color="#dcdcaa"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">append</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">(</font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">precios_cierre</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">[</font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">i</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">])</font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<br/>
+
+</p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">datos</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">[</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'Precio
+cierre'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">]
+= </font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">lista_precios_cierre</font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">datos</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">[</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'Títulos'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">]
+= </font></font></font><font color="#4ec9b0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">np</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">.</font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">floor</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">(</font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">datos</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">[</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'Valor
+monetario'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">]/</font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">datos</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">[</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'Precio
+cierre'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">])</font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<br/>
+
+</p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">inversion_pasiva</span></font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">
+= </span></font></font></font><font color="#4ec9b0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">pd</span></font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">.</span></font></font></font><font color="#4ec9b0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">DataFrame</span></font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">()</span></font></font></font></p>
+<p lang="en-US" class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<br/>
+
+</p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#c586c0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">for</span></font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">
+</span></font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">i</span></font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">
+</span></font></font></font><font color="#c586c0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">in</span></font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">
+</span></font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">fechas</span></font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><span lang="en-US">:</span></font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#d4d4d4">    </font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">inversion_pasiva</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">[</font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">i</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">]
+= </font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">precios</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">.</font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">loc</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">[</font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">i</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">]*</font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">datos</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">[</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'Títulos'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">]</font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<br/>
+
+</p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">df_final</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">
+= </font></font></font><font color="#4ec9b0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">pd</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">.</font></font></font><font color="#4ec9b0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">DataFrame</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">()</font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<br/>
+
+</p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">df_final</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">[</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'Capital'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">]
+= </font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">inversion_pasiva</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">.</font></font></font><font color="#dcdcaa"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">sum</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">()
++ </font></font></font><font color="#4ec9b0"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">dt</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">.</font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">cash_total</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">*</font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">capital</font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<br/>
+
+</p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">df_final</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">[</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'Rendimiento'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">]
+= </font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">df_final</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">[</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'Capital'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">].</font></font></font><font color="#dcdcaa"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">pct_change</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">()</font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<br/>
+
+</p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0in; background: #1e1e1e">
+<font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">df_final</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">[</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'Rendimiento
+acum'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">]
+= </font></font></font><font color="#9cdcfe"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">df_final</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">[</font></font></font><font color="#ce9178"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">'Rendimiento'</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">].</font></font></font><font color="#dcdcaa"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">cumsum</font></font></font><font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt">()</font></font></font></p>
+<p class="western" style="line-height: 0.19in; margin-bottom: 0.17in; background: #1e1e1e">
+<font color="#d4d4d4"><font face="Menlo, serif"><font size="2" style="font-size: 9pt"><br/>
+</font></font></font><br/>
+<br/>
+
+</p>
+<p style="line-height: 100%; margin-left: 0.5in; margin-top: 0.19in; margin-bottom: 0.19in">
+<br/>
+<br/>
+
+</p>
+<p style="line-height: 100%; margin-top: 0.19in; margin-bottom: 0.19in">
+En base al capital y el volumen de cada acción se le asignó una
+ponderación Individual a cada instrumento que forma parte de este
+fondo para posteriormente conocer la cantidad de títulos de cada
+acción así como el monto económico que éste hace referencia por
+dicha acción ya calculados los volúmenes individuales de las
+acciones que conforman fondo Proseguimos acercar los rendimientos
+diarios para posteriormente obtener un rendimiento acumulado del
+14.31% en nuestra inversión pasiva.</p>
+</body>
+</html>
