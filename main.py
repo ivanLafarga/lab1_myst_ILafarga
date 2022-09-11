@@ -50,4 +50,11 @@ df_final['Rendimiento'] = df_final['Capital'].pct_change()
 
 df_final['Rendimiento acum'] = df_final['Rendimiento'].cumsum()
 
+df_medidas = pd.DataFrame(index=['Rendimiento mensual acumulado', 'Rendimiento mensual promedio', 'Radio de sharpe'])
 
+
+mensual_acumulado = df_final['Rendimiento acum'][-1]
+mensual_promedio = df_final['Rendimiento'].mean()
+radio_sharpe = (mensual_promedio - 0.0429)/df_final['Rendimiento'].std()
+
+df_medidas['Inversion pasiva'] = [mensual_acumulado, mensual_promedio, radio_sharpe]
